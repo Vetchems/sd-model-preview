@@ -14,21 +14,6 @@ from modules.shared import opts
 from modules import script_callbacks, sd_models, shared
 
 
-def load_text(list_to_find):
-    promptgen_dict = {}
-    for result in Path('scripts/wildcards').rglob(list_to_find):
-        found_result = pathlib.Path(result)
-    if os.path.exists(found_result):
-        with open(found_result, "r", encoding="utf8") as file:
-            count = 1
-            for line in file:
-                #value = line.split()
-                promptgen_dict[int(count)] = line.strip()
-                #promptgen_dict[int(count)] = value
-                count += 1
-        return gr.Dropdown.update(choices=[v for k, v in promptgen_dict.items()])
-        #return promptgen_dict
-
 def list_all_models():
     if os.path.exists('models/Stable-diffusion'):
         model_dict = {}
@@ -54,7 +39,6 @@ def show_model_preview(modelname):
         with open(model_text_path, "r", encoding="utf8") as file:
             count = 1
             for line in file:
-                #value = line.split()
                 output_text = f'{line.strip()}\n'
         txt_update = gr.Textbox.update(value=output_text)
 
