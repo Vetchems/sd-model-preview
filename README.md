@@ -10,7 +10,7 @@ This extension allows you to create a txt file and jpg with the same name as you
 2. Paste `https://github.com/Vetchems/sd-model-preview` into the url box.
 3. Click Install
 4. from the Installed tab click apply and restart.
-5. Put txt and jpg files in the `extensions\sd-model-preview\data` folder with the same name as your model. (model.ckpt, model.txt, model,jpg)
+5. Put txt and jpg files in the `extensions\sd-model-preview\data` or `models\Stable-diffusion` with the same name as your model. (model.ckpt, model.txt, model,jpg). Subfolders may be used.
 
 ## Usage
 1. After creating the txt files and jpg images select the Model Preview tab in web ui
