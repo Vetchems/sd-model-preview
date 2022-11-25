@@ -15,3 +15,5 @@ This extension allows you to create a txt file and jpg with the same name as you
 ## Usage
 1. After creating the txt files and jpg images select the Model Preview tab in web ui
 2. Select a model from the dropdown list. (if the model has the txt and jpg files they will be shown)
+
+![screenshot](https://github.com/Vetchems/sd-model-preview/raw/main/sd-model-preview.png)
