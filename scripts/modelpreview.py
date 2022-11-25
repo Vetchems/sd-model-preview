@@ -31,10 +31,18 @@ def show_model_preview(modelname):
     jpg_html_update = None
     search_name = modelname.replace(".ckpt",".txt")
     search_model = modelname.replace(".ckpt",".jpg")
-    for txt_file in Path('./extensions').rglob('*.txt'):
-        if txt_file.name == search_name:
-            model_text_file = txt_file.name
-            model_text_path = Path(txt_file)
+    for txt_file in Path('extensions').rglob('*.txt'):
+        if txt_file.name == modelname.replace(".ckpt",".txt"):
+            if model_text_file is None:
+                model_text_file = txt_file.name
+                model_text_path = Path(txt_file)
+
+    for txt_file in Path('models/Stable-diffusion').rglob('*.txt'):
+        if txt_file.name == modelname.replace(".ckpt",".txt"):
+            if model_text_file is None:
+                model_text_file = txt_file.name
+                model_text_path = Path(txt_file)
+
     if model_text_file is not None:
         with open(model_text_path, "r", encoding="utf8") as file:
             count = 1
@@ -42,10 +50,17 @@ def show_model_preview(modelname):
                 output_text = f'{line.strip()}\n'
         txt_update = gr.Textbox.update(value=output_text)
 
-    for jpg_file in Path('./extensions').rglob('*.jpg'):
-        if jpg_file.name == search_model:
-            model_jpg_file = jpg_file.name
-            model_jpg_path = Path(jpg_file)
+    for jpg_file in Path('extensions').rglob('*.jpg'):
+        if jpg_file.name == modelname.replace(".ckpt",".jpg"):
+            if model_jpg_file is None:
+                model_jpg_file = jpg_file.name
+                model_jpg_path = Path(jpg_file)
+    for jpg_file in Path('models/Stable-diffusion').rglob('*.jpg'):
+        if jpg_file.name == modelname.replace(".ckpt",".jpg"):
+            if model_jpg_file is None:
+                model_jpg_file = jpg_file.name
+                model_jpg_path = Path(jpg_file)
+
     if model_jpg_file is not None:
         model_jpg_nospace = str(model_jpg_path).replace(" ","%20")
         jpg_html_update = gr.HTML.update(value=f'<div align=center><img src=file/{model_jpg_nospace} width=1000px></img></div>')
@@ -62,8 +77,6 @@ def on_ui_tabs():
         with gr.Row():
             txt_list = ""
             dummy = gr.Textbox(label='Tags (if any)', value=f'{txt_list}', interactive=False, lines=1)
-        #with gr.Row():
-        #    preview_image = gr.Image()
         with gr.Row():
             preview_image_html = gr.HTML()
         list_models.change(
@@ -73,7 +86,6 @@ def on_ui_tabs():
             ],
             outputs=[
             dummy,
-            #preview_image,
             preview_image_html,
             ]
         )
