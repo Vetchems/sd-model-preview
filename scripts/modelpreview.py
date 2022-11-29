@@ -13,12 +13,13 @@ from modules.processing import Processed, process_images
 from modules.shared import opts
 from modules import script_callbacks, sd_models, shared
 
+ckpt_dir = shared.cmd_opts.ckpt_dir or sd_models.model_path
 
 def list_all_models():
-    if os.path.exists('models/Stable-diffusion'):
+    if os.path.exists(ckpt_dir):
         model_dict = {}
         count = 1
-        for path in Path('models/Stable-diffusion').rglob('*.ckpt'):
+        for path in Path(ckpt_dir).rglob('*.ckpt'):
             value = path.name
             model_dict[int(count)] = value
             count += 1
@@ -37,7 +38,7 @@ def show_model_preview(modelname):
                 model_text_file = txt_file.name
                 model_text_path = Path(txt_file)
 
-    for txt_file in Path('models/Stable-diffusion').rglob('*.txt'):
+    for txt_file in Path(ckpt_dir).rglob('*.txt'):
         if txt_file.name == modelname.replace(".ckpt",".txt"):
             if model_text_file is None:
                 model_text_file = txt_file.name
@@ -55,7 +56,7 @@ def show_model_preview(modelname):
             if model_jpg_file is None:
                 model_jpg_file = jpg_file.name
                 model_jpg_path = Path(jpg_file)
-    for jpg_file in Path('models/Stable-diffusion').rglob('*.jpg'):
+    for jpg_file in Path(ckpt_dir).rglob('*.jpg'):
         if jpg_file.name == modelname.replace(".ckpt",".jpg"):
             if model_jpg_file is None:
                 model_jpg_file = jpg_file.name
