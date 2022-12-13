@@ -1,11 +1,11 @@
-import json
-import requests
-from random import randint
 import os.path
 from pathlib import Path
 
 import pathlib
 import os
+import re
+import glob
+
 import modules.scripts as scripts
 import gradio as gr
 
@@ -29,52 +29,94 @@ def list_all_models():
 #        return model_dict
     return model_list
 
+# Function to create HTML code for a given image file
+def create_html_code(file):
+    # Create the HTML code for the image
+    space_replace = file.replace(" ","%20")
+    html_code = f'<div align=center><img src=file/{file} width=1000px></img></div>'
+    #html_code = '<img src="{}" alt="Image file: {}">'.format(file, file)
+  
+    # Return the HTML code
+    return html_code
+
+# Function to search for image files with a similar name to the input string
+def search_and_display_images(input_str):
+    # Create a regex pattern to match image files with a similar name to the input string
+    pattern = re.compile(r'.*' + input_str + r'.*\.(png|jpg)')
+    txt_pattern = re.compile(r'.*' + input_str + r'.*\.txt')
+    # Get the current working directory
+    #cwd = os.getcwd()
+    cwd = Path('models/Stable-diffusion')
+  
+    # Initialize a list to store the HTML code for all the images
+    html_code_list = []
+  
+    # Search for PNG and JPG files with a similar name to the input string in the current directory and its subdirectories
+    for file in glob.glob(os.path.join(cwd, '**'), recursive=True):
+        # Check if the file is a PNG or JPG file with a similar name to the input string
+        if pattern.match(file):
+            # If so, create the HTML code for the image
+            html_code = create_html_code(file)
+
+            # Append the HTML code to the list
+            html_code_list.append(html_code)
+        if txt_pattern.match(file):
+            txt_file = file
+    # Return the list of HTML code
+    return html_code_list, txt_file
+
+
 def refresh_models():
     model_list = sd_models.checkpoint_tiles()
     refresh_ckpt = gr.Dropdown.update(label="Model", choices=list_all_models(), interactive=True, elem_id="quicksettings")
     return refresh_ckpt
 
 def show_model_preview(modelname=None):
-    modelname = modelname.split(' [',1)[0].split('\\')[-1]
+    modelname = modelname.split(' [',1)[0].split('\\')[-1].replace(".ckpt","").replace(".safetensor","")
+
     model_text_file = None
     model_jpg_file = None
     txt_update = None
     jpg_html_update = None
-    search_name = modelname.replace(".ckpt",".txt")
-    search_model = modelname.replace(".ckpt",".jpg")
-    for txt_file in Path('extensions').rglob('*.txt'):
-        if txt_file.name == modelname.replace(".ckpt",".txt"):
-            if model_text_file is None:
-                model_text_file = txt_file.name
-                model_text_path = Path(txt_file)
 
-    for txt_file in Path('models/Stable-diffusion').rglob('*.txt'):
-        if txt_file.name == modelname.replace(".ckpt",".txt"):
-            if model_text_file is None:
-                model_text_file = txt_file.name
-                model_text_path = Path(txt_file)
+#    for txt_file in Path('models/Stable-diffusion').rglob('*.txt'):
+#        if txt_file.name == f'{modelname}.txt':
+#            if model_text_file is None:
+#                model_text_file = txt_file.name
+#                model_text_path = Path(txt_file)
 
-    if model_text_file is not None:
-        with open(model_text_path, "r", encoding="utf8") as file:
-            count = 1
-            for line in file:
-                output_text = f'{line.strip()}\n'
+#    if model_text_file is not None:
+#        with open(model_text_path, "r", encoding="utf8") as file:
+#            output_text = ""
+#            for line in file:
+#                output_text = f'{output_text}{line.strip()}\n'
+#        txt_update = gr.Textbox.update(value=output_text)
+    html_code_list = []
+    found_txt_file = None
+    html_code_list, found_txt_file = search_and_display_images(modelname)
+    if found_txt_file:
+        with open(found_txt_file, "r", encoding="utf8") as file:
+                output_text = ""
+                for line in file:
+                    output_text = f'{output_text}{line.strip()}\n'
         txt_update = gr.Textbox.update(value=output_text)
+    image_preview_html = '<br>'.join(html_code_list)
+    if html_code_list:
+        jpg_html_update = gr.HTML.update(value=image_preview_html)
+#    for jpg_file in Path('extensions').rglob('*.jpg'):
+#        if jpg_file.name == modelname.replace(".ckpt",".jpg"):
+#            if model_jpg_file is None:
+#                model_jpg_file = jpg_file.name
+#                model_jpg_path = Path(jpg_file)
+#    for jpg_file in Path('models/Stable-diffusion').rglob('*.jpg'):
+#        if jpg_file.name == modelname.replace(".ckpt",".jpg"):
+#            if model_jpg_file is None:
+#                model_jpg_file = jpg_file.name
+#                model_jpg_path = Path(jpg_file)
 
-    for jpg_file in Path('extensions').rglob('*.jpg'):
-        if jpg_file.name == modelname.replace(".ckpt",".jpg"):
-            if model_jpg_file is None:
-                model_jpg_file = jpg_file.name
-                model_jpg_path = Path(jpg_file)
-    for jpg_file in Path('models/Stable-diffusion').rglob('*.jpg'):
-        if jpg_file.name == modelname.replace(".ckpt",".jpg"):
-            if model_jpg_file is None:
-                model_jpg_file = jpg_file.name
-                model_jpg_path = Path(jpg_file)
-
-    if model_jpg_file is not None:
-        model_jpg_nospace = str(model_jpg_path).replace(" ","%20")
-        jpg_html_update = gr.HTML.update(value=f'<div align=center><img src=file/{model_jpg_nospace} width=1000px></img></div>')
+#    if model_jpg_file is not None:
+#        model_jpg_nospace = str(model_jpg_path).replace(" ","%20")
+#        jpg_html_update = gr.HTML.update(value=f'<div align=center><img src=file/{model_jpg_nospace} width=1000px></img></div>')
 
     return txt_update, jpg_html_update
 
