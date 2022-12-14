@@ -41,6 +41,7 @@ def create_html_code(file):
 
 # Function to search for image files with a similar name to the input string
 def search_and_display_images(input_str):
+    txt_file = None
     # Create a regex pattern to match image files with a similar name to the input string
     pattern = re.compile(r'.*' + input_str + r'.*\.(png|jpg)')
     txt_pattern = re.compile(r'.*' + input_str + r'.*\.txt')
