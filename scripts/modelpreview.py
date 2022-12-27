@@ -73,7 +73,7 @@ def refresh_models():
     return refresh_ckpt
 
 def show_model_preview(modelname=None):
-    modelname = modelname.split(' [',1)[0].split('\\')[-1].replace(".ckpt","").replace(".safetensor","")
+    modelname = modelname.split(' [',1)[0].split('\\')[-1].replace(".ckpt","").replace(".safetensors","")
 
     model_text_file = None
     model_jpg_file = None
